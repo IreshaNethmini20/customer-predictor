@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Airlytics – Reports{% endblock %}
+
+{% block body_class %}min-h-screen bg-gray-50{% endblock %}  <!-- Different background for report page -->
+
+{% block content %}
+<div class="text-center mb-8">
+    <h2 class="text-3xl font-bold text-gray-800">Customer Satisfaction Report</h2>
+    <p class="text-gray-600">Detailed analysis based on your prediction</p>
+</div>
+
+<div class="glass-effect rounded-2xl p-8 form-shadow">
+    {% if prediction %}
+    <div class="space-y-6">
+        <!-- Input Summary -->
+        <div class="bg-blue-50 p-6 rounded-lg">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Traveler Profile</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <p><span class="font-medium">Age:</span> {{ prediction.input_data.age }}</p>
+                <p><span class="font-medium">Gender:</span> {{ prediction.input_data.gender }}</p>
+                <p><span class="font-medium">Occupation:</span> {{ prediction.input_data.occupation }}</p>
+                <p><span class="font-medium">Travel Class:</span> {{ prediction.input_data.travel_class }}</p>
+                <p><span class="font-medium">State of Residence:</span> {{ prediction.input_data.state_of_residence }}</p>
+                <p><span class="font-medium">Duration of Stay:</span> {{ prediction.input_data.duration_of_stays }} days</p>
+                <p><span class="font-medium">Number of Companions:</span> {{ prediction.input_data.number_of_companions }}</p>
+                <p><span class="font-medium">Purpose of Travel:</span> {{ prediction.input_data.purpose_of_travel }}</p>
+                <p><span class="font-medium">Special Requests:</span> {{ prediction.input_data.special_request | join(', ') if prediction.input_data.special_request else 'None' }}</p>
+                <p><span class="font-medium">Loyalty Member:</span> {{ prediction.input_data.loyalty_program_member }}</p>
+                <p><span class="font-medium">Total Price:</span> ${{ prediction.input_data.total_price }}</p>
+                <p><span class="font-medium">Destination City:</span> {{ prediction.input_data.destination_city }}</p>
+                <p><span class="font-medium">Destination Country:</span> {{ prediction.input_data.destination_country }}</p>
+                <p><span class="font-medium">Days Before Travel:</span> {{ prediction.input_data.days_before_travel }}</p>
+            </div>
+        </div>
+
+        <!-- Prediction Result -->
+        {% set color = 'green' if prediction.satisfaction_class == 'High' else 'yellow' if prediction.satisfaction_class == 'Medium' else 'red' %}
+        <div class="result-card bg-white border-2 border-{{ color }}-200 rounded-lg p-6">
+            <div class="flex items-center justify-center mb-4">
+                <svg class="w-12 h-12 text-{{ color }}-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-center mb-2 text-gray-800">Prediction Summary</h3>
+            <div class="text-center">
+                <p class="text-lg font-semibold mb-1 text-gray-700">Satisfaction Level:</p>
+                <p class="text-4xl font-bold mb-3 {{ 'satisfaction-high' if prediction.satisfaction_class == 'High' else 'satisfaction-medium' if prediction.satisfaction_class == 'Medium' else 'satisfaction-low' }}">{{ prediction.satisfaction_class }}</p>
+                <div class="w-full bg-gray-200 rounded-full h-4 mb-2">
+                   <div class="h-4 rounded-full {{ 'bg-' + color + '-500' }}" style="width: {{ (prediction.satisfaction_score / 5.0 * 100) }}%"></div>
+
+                </div>
+                <p class="text-sm text-gray-600">Confidence Score: {{ prediction.satisfaction_score }} / 5.0</p>
+            </div>
+        </div>
+
+        
+
+        <!-- Download Button -->
+        <div class="text-center">
+            <button onclick="downloadReport()" class="btn-predict inline-block py-3 px-8 text-white font-semibold text-lg rounded-lg shadow-lg">Download Report (PDF)</button>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-12">
+        <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">No Report Available</h3>
+        <p class="text-gray-600 mb-4">Generate a prediction in Analytics to view your report.</p>
+        <a href="{{ url_for('analytics') }}" class="btn-predict inline-block py-2 px-6 text-white font-semibold rounded-lg">Go to Analytics</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function downloadReport() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const predictionData = JSON.parse('{{ prediction | tojson | safe }}');
+        
+        doc.setFontSize(20);
+        doc.text('Airlytics Customer Satisfaction Report', 20, 20);
+        
+        doc.setFontSize(12);
+        doc.text(`Satisfaction Level: ${predictionData.satisfaction_class}`, 20, 40);
+        doc.text(`Confidence Score: ${predictionData.satisfaction_score} / 5.0`, 20, 50);
+        
+        doc.text('Traveler Profile:', 20, 70);
+        let y = 85;
+        const input = predictionData.input_data;
+        doc.text(`Age: ${input.age}, Gender: ${input.gender}`, 20, y);
+        y += 10;
+        doc.text(`Occupation: ${input.occupation}, Class: ${input.travel_class}`, 20, y);
+        y += 10;
+        doc.text(`Destination: ${input.destination_city}, ${input.destination_country}`, 20, y);
+        y += 10;
+        doc.text(`Price: $${input.total_price}, Purpose: ${input.purpose_of_travel}`, 20, y);
+        
+         
+        
+        doc.save('Airlytics_Satisfaction_Report.pdf');
+    }
+</script>
+{% endblock %}

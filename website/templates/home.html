@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Airlytics – Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="text-center mb-16">
+    <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 hero-title">Elevate Your Airline Experience</h1>
+    <p class="text-xl text-blue-100 mb-8">AI-powered customer satisfaction predictions to build loyalty, reputation, and growth in the competitive airline industry.</p>
+    <a href="{{ url_for('analytics') }}" class="btn-predict inline-block py-4 px-8 text-white font-semibold text-lg rounded-lg shadow-lg">Start Predicting</a>
+</div>
+
+<!-- Features Section -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+    <div class="glass-effect p-6 text-center rounded-xl">
+        <svg class="w-12 h-12 mx-auto mb-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">AI Predictions</h3>
+        <p class="text-gray-600">Get instant insights into customer satisfaction using advanced machine learning.</p>
+    </div>
+    <div class="glass-effect p-6 text-center rounded-xl">
+        <svg class="w-12 h-12 mx-auto mb-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        </svg>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">Actionable Insights</h3>
+        <p class="text-gray-600">Optimize routes, services, and loyalty programs based on data-driven recommendations.</p>
+    </div>
+    <div class="glass-effect p-6 text-center rounded-xl">
+        <svg class="w-12 h-12 mx-auto mb-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">Loyalty Optimization</h3>
+        <p class="text-gray-600">Boost retention with personalized experiences tailored to traveler profiles.</p>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 text-center">
+    <div>
+        <h2 class="text-3xl font-bold text-white">95%</h2>
+        <p class="text-blue-100">Prediction Accuracy</p>
+    </div>
+    <div>
+        <h2 class="text-3xl font-bold text-white">10K+</h2>
+        <p class="text-blue-100">Travelers Analyzed</p>
+    </div>
+    <div>
+        <h2 class="text-3xl font-bold text-white">50%</h2>
+        <p class="text-blue-100">Loyalty Improvement</p>
+    </div>
+</div>
+{% endblock %}

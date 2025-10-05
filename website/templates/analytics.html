@@ -1,0 +1,507 @@
+{% extends "base.html" %}
+
+{% block title %}Airlytics – Analytics{% endblock %}
+
+{% block content %}
+<div class="text-center mb-12">
+    <h2 class="text-4xl md:text-5xl font-bold text-white mb-4 hero-title">Customer Satisfaction Predictor</h2>
+    <p class="text-xl text-blue-100">Enter traveler details for AI-powered satisfaction analysis</p>
+</div>
+
+<!-- Form Container -->
+<div class="glass-effect rounded-2xl p-6 md:p-10 form-shadow mb-8">
+    <form id="satisfactionForm" class="space-y-6">
+        <!-- Row 1: Age and Gender -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label for="age" class="block text-sm font-medium text-gray-700 mb-2 transition-all duration-300">Age</label>
+                <input type="number" id="age" name="age" required min="0"
+                    placeholder="e.g., 30"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-500 outline-none transition-all duration-200 hover:shadow-md">
+            </div>
+            <div>
+                <label for="gender" class="block text-sm font-medium text-gray-700 mb-2 transition-all duration-300">Gender</label>
+                <select id="gender" name="gender" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-500 outline-none transition-all duration-200 hover:shadow-md">
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Row 2: Occupation and Travel Class -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="relative">
+                <label for="occupation" class="block text-sm font-medium text-gray-700 mb-2 transition-all duration-300">Occupation</label>
+                <input type="text" id="occupation" name="occupation" required
+                    placeholder="e.g., Teacher, Engineer"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-500 outline-none transition-all duration-200 hover:shadow-md">
+                <div id="occupationSuggestions" class="autocomplete-suggestions"></div>
+            </div>
+            <div>
+                <label for="travel_class" class="block text-sm font-medium text-gray-700 mb-2 transition-all duration-300">Travel Class</label>
+                <select id="travel_class" name="travel_class" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-500 outline-none transition-all duration-200 hover:shadow-md">
+                    <option value="">Select Class</option>
+                    <option value="Business">Business</option>
+                    <option value="Economy">Economy</option>
+                    <option value="Luxury">Luxury</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Row 3: State of Residence and Duration of Stay -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="relative">
+                <label for="state_of_residence" class="block text-sm font-medium text-gray-700 mb-2 transition-all duration-300">State of Residence</label>
+                <input type="text" id="state_of_residence" name="state_of_residence" required
+                    placeholder="e.g., California, Texas"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-500 outline-none transition-all duration-200 hover:shadow-md">
+                <div id="stateSuggestions" class="autocomplete-suggestions"></div>
+            </div>
+            <div>
+                <label for="duration_of_stays" class="block text-sm font-medium text-gray-700 mb-2 transition-all duration-300">Duration of Stay (Days)</label>
+                <input type="number" id="duration_of_stays" name="duration_of_stays" required min="1"
+                    placeholder="e.g., 7"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-500 outline-none transition-all duration-200 hover:shadow-md">
+            </div>
+        </div>
+
+        <!-- Row 4: Number of Companions and Purpose of Travel -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label for="number_of_companions" class="block text-sm font-medium text-gray-700 mb-2 transition-all duration-300">Number of Companions</label>
+                <input type="number" id="number_of_companions" name="number_of_companions" required min="0"
+                    placeholder="e.g., 2"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-500 outline-none transition-all duration-200 hover:shadow-md">
+            </div>
+            <div>
+                <label for="purpose_of_travel" class="block text-sm font-medium text-gray-700 mb-2 transition-all duration-300">Purpose of Travel</label>
+                <select id="purpose_of_travel" name="purpose_of_travel" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-500 outline-none transition-all duration-200 hover:shadow-md">
+                    <option value="">Select Purpose</option>
+                    <option value="Tourism">Tourism</option>
+                    <option value="Research">Research</option>
+                    <option value="Unknown">Unknown</option>
+                    <option value="Business">Business</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Special Requests -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-3">Special Requests</label>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <label class="checkbox-item flex items-center p-3 rounded-lg border border-gray-200 cursor-pointer">
+                    <input type="checkbox" name="special_request" value="Other"
+                        class="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500">
+                    <span class="ml-3 text-gray-700">Other</span>
+                </label>
+                <label class="checkbox-item flex items-center p-3 rounded-lg border border-gray-200 cursor-pointer">
+                    <input type="checkbox" name="special_request" value="No"
+                        class="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500">
+                    <span class="ml-3 text-gray-700">No</span>
+                </label>
+                <label class="checkbox-item flex items-center p-3 rounded-lg border border-gray-200 cursor-pointer">
+                    <input type="checkbox" name="special_request" value="Special Meal"
+                        class="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500">
+                    <span class="ml-3 text-gray-700">Special Meal</span>
+                </label>
+                <label class="checkbox-item flex items-center p-3 rounded-lg border border-gray-200 cursor-pointer">
+                    <input type="checkbox" name="special_request" value="Window Seat"
+                        class="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500">
+                    <span class="ml-3 text-gray-700">Window Seat</span>
+                </label>
+                <label class="checkbox-item flex items-center p-3 rounded-lg border border-gray-200 cursor-pointer">
+                    <input type="checkbox" name="special_request" value="Extra Space Suit"
+                        class="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500">
+                    <span class="ml-3 text-gray-700">Extra Space Suit</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Loyalty Program -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-3">Loyalty Program Member</label>
+            <div class="flex space-x-6">
+                <label class="flex items-center cursor-pointer">
+                    <input type="radio" name="loyalty_program_member" value="Yes" required
+                        class="w-5 h-5 text-blue-600 focus:ring-2 focus:ring-blue-500">
+                    <span class="ml-2 text-gray-700">Yes</span>
+                </label>
+                <label class="flex items-center cursor-pointer">
+                    <input type="radio" name="loyalty_program_member" value="No"
+                        class="w-5 h-5 text-blue-600 focus:ring-2 focus:ring-blue-500">
+                    <span class="ml-2 text-gray-700">No</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Row 5: Total Price and Destination City -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label for="total_price" class="block text-sm font-medium text-gray-700 mb-2 transition-all duration-300">Total Price</label>
+                <input type="number" id="total_price" name="total_price" required min="0" step="0.01"
+                    placeholder="e.g., 500.00"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-500 outline-none transition-all duration-200 hover:shadow-md">
+            </div>
+            <div class="relative">
+                <label for="destination_city" class="block text-sm font-medium text-gray-700 mb-2 transition-all duration-300">Destination City</label>
+                <input type="text" id="destination_city" name="destination_city" required
+                    placeholder="e.g., Paris, Tokyo"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-500 outline-none transition-all duration-200 hover:shadow-md">
+                <div id="citySuggestions" class="autocomplete-suggestions"></div>
+            </div>
+        </div>
+
+        <!-- Row 6: Destination Country and Days Before Travel -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="relative">
+                <label for="destination_country" class="block text-sm font-medium text-gray-700 mb-2 transition-all duration-300">Destination Country</label>
+                <input type="text" id="destination_country" name="destination_country" required
+                    placeholder="e.g., Italy, Japan"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-500 outline-none transition-all duration-200 hover:shadow-md">
+                <div id="countrySuggestions" class="autocomplete-suggestions"></div>
+            </div>
+            <div>
+                <label for="days_before_travel" class="block text-sm font-medium text-gray-700 mb-2 transition-all duration-300">Days Before Travel</label>
+                <input type="number" id="days_before_travel" name="days_before_travel" required min="0"
+                    placeholder="e.g., 30"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-500 outline-none transition-all duration-200 hover:shadow-md">
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-4">
+            <button type="submit"
+                class="btn-predict w-full py-4 text-white font-semibold text-lg rounded-lg shadow-lg flex items-center justify-center">
+                <span id="btnText">Predict Satisfaction</span>
+                <svg id="loadingSpinner" class="hidden w-5 h-5 ml-2 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </button>
+        </div>
+    </form>
+
+    <!-- Result Display -->
+    <div id="resultContainer" class="hidden mt-8"></div>
+
+    <!-- Generate Report Button -->
+    <div id="generateReportBtn" class="hidden mt-6 text-center">
+        <a href="{{ url_for('reports') }}" class="btn-predict inline-block py-3 px-8 text-white font-semibold text-lg rounded-lg shadow-lg">Generate Detailed Report</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Define suggestion lists
+    const occupations = [
+        "Marketer", "Curator", "Businessperson", "Photographer", "Soldier", "Other", "Navigator", "Therapist",
+        "Web Developer", "Ecologist", "Pilot", "Surveyor", "Biologist", "Journalist", "Engineer Assistant",
+        "Technician", "Videographer", "Sailor", "Game Designer", "Physiotherapist", "Librarian", "Baker",
+        "Social Worker", "Farmer", "Data Analyst", "Auditor", "Mathematician", "Producer", "Project Manager",
+        "Scientist", "Athlete", "Driver", "Paramedic", "Research Assistant", "Software Developer", "Sommelier",
+        "Dancer", "Mechanic", "Archaeologist", "Accountant", "Politician", "Teacher", "Zoologist", "Doctor",
+        "Programmer", "UX Designer", "Writer", "Historian", "Architect", "Barista", "Strategist", "Translator",
+        "Consultant", "Interior Designer", "Operator", "Actor", "Electrician", "Carpenter", "Astronomer",
+        "Chef", "Coach", "Geologist", "Nurse", "Planner", "Comedian", "Designer", "Animator", "Physicist",
+        "Firefighter", "Lawyer", "Lecturer", "Judge", "Police Officer", "Professor", "Director", "Manager",
+        "Musician", "Artist", "Engineer", "Administrator", "Tutor", "Economist", "Analyst", "Veterinarian",
+        "Researcher", "Inspector", "Singer", "Plumber", "Chemist", "Unknown", "Entrepreneur", "Fashion Designer",
+        "Air Traffic Controller"
+    ];
+    const states = [
+        "Georgia", "North Dakota", "Nebraska", "Nevada", "Minnesota", "Florida", "California", "Virginia",
+        "Ohio", "Wyoming", "Massachusetts", "South Dakota", "Texas", "Delaware", "Oregon", "Vermont",
+        "New Jersey", "Montana", "Maine", "Washington", "Idaho", "New York", "Unknown", "Utah", "Arizona",
+        "Alabama", "Kansas", "West Virginia", "Iowa", "Michigan", "Wisconsin", "South Carolina", "Missouri",
+        "Rhode Island", "Tennessee", "Oklahoma", "New Mexico", "Indiana", "Alaska", "Illinois", "Connecticut",
+        "Maryland", "Colorado", "Hawaii", "Arkansas", "Mississippi", "North Carolina", "Pennsylvania",
+        "New Hampshire", "Louisiana", "Kentucky"
+    ];
+    const cities = [
+        "Naples", "Auckland", "Tokyo", "Granada", "Jeju Island", "Paris", "Interlaken", "Hong Kong",
+        "Budapest", "Wellington", "Dubrovnik", "Stockholm", "Madrid", "Cancun", "Frankfurt", "Rio de Janeiro",
+        "Doha", "London", "Krakow", "Bogotá", "Venice", "Glasgow", "St. Petersburg", "Cusco", "Hanoi",
+        "Oslo", "Moscow", "Siem Reap", "Montreal", "Lima", "Abu Dhabi", "Manila", "Prague", "Shanghai",
+        "Maldives", "Boracay", "Marrakech", "Munich", "Ho Chi Minh City", "Rotterdam", "Langkawi", "Bali",
+        "Luang Prabang", "Santiago", "Cape Town", "Valencia", "Vienna", "Quito", "San José", "Porto",
+        "Agra (Taj Mahal)", "Warsaw", "Dublin", "Florence", "Kyoto", "Athens", "Edinburgh", "Split",
+        "Dubai", "Seoul", "Copenhagen", "Helsinki", "Singapore", "Amsterdam", "Machu Picchu", "Melbourne",
+        "Havana", "Barcelona", "Bangkok", "Berlin", "Jaipur", "Panama City", "Toronto", "Galápagos Islands",
+        "Brussels", "Reykjavik", "Zurich", "Beijing", "Sydney", "Rome", "São Paulo", "Mexico City",
+        "Lisbon", "Montego Bay", "Cartagena", "Istanbul", "Galway", "Buenos Aires", "Milan", "Seville",
+        "Cairo", "Kathmandu", "Queenstown", "Phuket", "Vancouver", "New Delhi", "Kuala Lumpur", "Santorini"
+    ];
+    const countries = [
+        "Italy", "New Zealand", "Japan", "Spain", "South Korea", "France", "Switzerland", "Unknown",
+        "Hungary", "Croatia", "Sweden", "Mexico", "Germany", "Brazil", "Qatar", "UK", "Poland",
+        "Colombia", "Scotland", "Russia", "Peru", "Vietnam", "Norway", "Cambodia", "Canada", "UAE",
+        "Philippines", "Czech Republic", "China", "Morocco", "Netherlands", "Malaysia", "Indonesia",
+        "Laos", "Chile", "South Africa", "Austria", "Ecuador", "Costa Rica", "Portugal", "India",
+        "Ireland", "Greece", "Denmark", "Finland", "Australia", "Cuba", "Thailand", "Panama",
+        "Belgium", "Iceland", "Jamaica", "Turkey", "Argentina", "Egypt", "Nepal"
+    ];
+    const cityToCountryMap = {
+        "Naples": "Italy", "Auckland": "New Zealand", "Tokyo": "Japan", "Granada": "Spain",
+        "Jeju Island": "South Korea", "Paris": "France", "Interlaken": "Switzerland", "Hong Kong": "China",
+        "Budapest": "Hungary", "Wellington": "New Zealand", "Dubrovnik": "Croatia", "Stockholm": "Sweden",
+        "Madrid": "Spain", "Cancun": "Mexico", "Frankfurt": "Germany", "Rio de Janeiro": "Brazil",
+        "Doha": "Qatar", "London": "UK", "Krakow": "Poland", "Bogotá": "Colombia",
+        "Venice": "Italy", "Glasgow": "Scotland", "St. Petersburg": "Russia", "Cusco": "Peru",
+        "Hanoi": "Vietnam", "Oslo": "Norway", "Moscow": "Russia", "Siem Reap": "Cambodia",
+        "Montreal": "Canada", "Lima": "Peru", "Abu Dhabi": "UAE", "Manila": "Philippines",
+        "Prague": "Czech Republic", "Shanghai": "China", "Maldives": "Maldives", "Boracay": "Philippines",
+        "Marrakech": "Morocco", "Munich": "Germany", "Ho Chi Minh City": "Vietnam", "Rotterdam": "Netherlands",
+        "Langkawi": "Malaysia", "Bali": "Indonesia", "Luang Prabang": "Laos", "Santiago": "Chile",
+        "Cape Town": "South Africa", "Valencia": "Spain", "Vienna": "Austria", "Quito": "Ecuador",
+        "San José": "Costa Rica", "Porto": "Portugal", "Agra (Taj Mahal)": "India", "Warsaw": "Poland",
+        "Dublin": "Ireland", "Florence": "Italy", "Kyoto": "Japan", "Athens": "Greece",
+        "Edinburgh": "Scotland", "Split": "Croatia", "Dubai": "UAE", "Seoul": "South Korea",
+        "Copenhagen": "Denmark", "Helsinki": "Finland", "Singapore": "Singapore", "Amsterdam": "Netherlands",
+        "Machu Picchu": "Peru", "Melbourne": "Australia", "Havana": "Cuba", "Barcelona": "Spain",
+        "Bangkok": "Thailand", "Berlin": "Germany", "Jaipur": "India", "Panama City": "Panama",
+        "Toronto": "Canada", "Galápagos Islands": "Ecuador", "Brussels": "Belgium", "Reykjavik": "Iceland",
+        "Zurich": "Switzerland", "Beijing": "China", "Sydney": "Australia", "Rome": "Italy",
+        "São Paulo": "Brazil", "Mexico City": "Mexico", "Lisbon": "Portugal", "Montego Bay": "Jamaica",
+        "Cartagena": "Colombia", "Istanbul": "Turkey", "Galway": "Ireland", "Buenos Aires": "Argentina",
+        "Milan": "Italy", "Seville": "Spain", "Cairo": "Egypt", "Kathmandu": "Nepal",
+        "Queenstown": "New Zealand", "Phuket": "Thailand", "Vancouver": "Canada", "New Delhi": "India",
+        "Kuala Lumpur": "Malaysia", "Santorini": "Greece"
+    };
+
+    // Function to filter cities based on country
+    function getCitiesByCountry(country) {
+        const selectedCountry = country.trim().toLowerCase();
+        return Object.keys(cityToCountryMap).filter(
+            city => cityToCountryMap[city].toLowerCase() === selectedCountry
+        );
+    }
+
+    // Autocomplete function
+    function setupAutocomplete(inputId, suggestionId, options, isCity = false) {
+        const input = document.getElementById(inputId);
+        const suggestionBox = document.getElementById(suggestionId);
+
+        input.addEventListener('input', () => {
+            const query = input.value.trim().toLowerCase();
+            suggestionBox.innerHTML = '';
+            let filteredOptions = options;
+            if (isCity) {
+                const countryInput = document.getElementById('destination_country');
+                const selectedCountry = countryInput.value.trim().toLowerCase();
+                filteredOptions = selectedCountry ? getCitiesByCountry(selectedCountry) : options;
+            }
+            if (query) {
+                const filtered = filteredOptions.filter(option => 
+                    option.toLowerCase().startsWith(query)
+                ).slice(0, 5);
+                if (filtered.length) {
+                    suggestionBox.style.display = 'block';
+                    filtered.forEach(option => {
+                        const div = document.createElement('div');
+                        div.className = 'autocomplete-suggestion';
+                        div.textContent = option;
+                        div.addEventListener('click', () => {
+                            input.value = option;
+                            suggestionBox.innerHTML = '';
+                            suggestionBox.style.display = 'none';
+                            if (isCity) {
+                                const countryInput = document.getElementById('destination_country');
+                                countryInput.value = cityToCountryMap[option] || '';
+                            }
+                        });
+                        suggestionBox.appendChild(div);
+                    });
+                } else {
+                    suggestionBox.style.display = 'none';
+                }
+            } else {
+                suggestionBox.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!input.contains(e.target) && !suggestionBox.contains(e.target)) {
+                suggestionBox.style.display = 'none';
+            }
+        });
+    }
+
+    // Initialize autocomplete for each field
+    setupAutocomplete('occupation', 'occupationSuggestions', occupations);
+    setupAutocomplete('state_of_residence', 'stateSuggestions', states);
+    setupAutocomplete('destination_city', 'citySuggestions', cities, true);
+    setupAutocomplete('destination_country', 'countrySuggestions', countries);
+
+    // Update city suggestions when country changes
+    const cityInput = document.getElementById('destination_city');
+    const countryInput = document.getElementById('destination_country');
+    countryInput.addEventListener('input', () => {
+        const suggestionBox = document.getElementById('citySuggestions');
+        const query = cityInput.value.trim().toLowerCase();
+        suggestionBox.innerHTML = '';
+        const filteredCities = getCitiesByCountry(countryInput.value);
+        const cityOptions = filteredCities.length ? filteredCities : cities;
+        if (query) {
+            const filtered = cityOptions.filter(option =>
+                option.toLowerCase().startsWith(query)
+            ).slice(0, 5);
+            if (filtered.length) {
+                suggestionBox.style.display = 'block';
+                filtered.forEach(option => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-suggestion';
+                    div.textContent = option;
+                    div.addEventListener('click', () => {
+                        cityInput.value = option;
+                        suggestionBox.innerHTML = '';
+                        suggestionBox.style.display = 'none';
+                        if (cityToCountryMap[option]) {
+                            countryInput.value = cityToCountryMap[option];
+                        }
+                    });
+                    suggestionBox.appendChild(div);
+                });
+            } else {
+                suggestionBox.style.display = 'none';
+            }
+        } else {
+            suggestionBox.style.display = 'none';
+        }
+    });
+
+    // Validate city and country on form submission
+    function validateCityCountry(city, country) {
+        const expectedCountry = cityToCountryMap[city];
+        if (expectedCountry && country !== expectedCountry && country !== 'Unknown') {
+            return `Selected city "${city}" is in ${expectedCountry}, but you entered "${country}". Please correct the country.`;
+        }
+        return null;
+    }
+
+    // Form submission
+    document.getElementById('satisfactionForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Get form data
+        const formData = new FormData(e.target);
+        const data = {
+            age: parseInt(formData.get('age')),
+            gender: formData.get('gender'),
+            occupation: formData.get('occupation'),
+            travel_class: formData.get('travel_class'),
+            state_of_residence: formData.get('state_of_residence'),
+            duration_of_stays: parseInt(formData.get('duration_of_stays')),
+            number_of_companions: parseInt(formData.get('number_of_companions')),
+            purpose_of_travel: formData.get('purpose_of_travel'),
+            special_request: formData.getAll('special_request'),
+            loyalty_program_member: formData.get('loyalty_program_member'),
+            total_price: parseFloat(formData.get('total_price')),
+            destination_city: formData.get('destination_city'),
+            destination_country: formData.get('destination_country'),
+            days_before_travel: parseInt(formData.get('days_before_travel'))
+        };
+
+        // Validate city and country
+        const validationError = validateCityCountry(data.destination_city, data.destination_country);
+        if (validationError) {
+            displayError(validationError);
+            return;
+        }
+
+        // Show loading state
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const btnText = document.getElementById('btnText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        btnText.textContent = 'Analyzing...';
+        loadingSpinner.classList.remove('hidden');
+        submitBtn.disabled = true;
+
+        try {
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                displayResult(result);
+                // Show Generate Report button
+                document.getElementById('generateReportBtn').classList.remove('hidden');
+            } else {
+                displayError(result.error);
+            }
+        } catch (error) {
+            displayError('An error occurred. Please try again.');
+        } finally {
+            btnText.textContent = 'Predict Satisfaction';
+            loadingSpinner.classList.add('hidden');
+            submitBtn.disabled = false;
+        }
+    });
+
+    function displayResult(result) {
+        const container = document.getElementById('resultContainer');
+        const colorMap = {
+            'success': 'bg-green-50 border-green-500 text-green-800',
+            'info': 'bg-blue-50 border-blue-500 text-blue-800',
+            'warning': 'bg-yellow-50 border-yellow-500 text-yellow-800',
+            'danger': 'bg-red-50 border-red-500 text-red-800'
+        };
+        const iconMap = {
+            'success': '<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>',
+            'info': '<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
+            'warning': '<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>',
+            'danger': '<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>'
+        };
+        const satisfactionClassMap = {
+            'High': 'satisfaction-high',
+            'Medium': 'satisfaction-medium',
+            'Low': 'satisfaction-low'
+        };
+
+        container.innerHTML = `
+            <div class="result-card ${colorMap[result.color]} border-l-4 rounded-lg p-8 bg-opacity-90 backdrop-blur-sm">
+                <div class="flex items-center justify-center mb-4">
+                    <svg class="w-10 h-10 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                    ${iconMap[result.color]}
+                </div>
+                <h3 class="text-2xl font-bold text-center mb-2">Satisfaction Prediction</h3>
+                <div class="text-center">
+                    <p class="text-lg font-semibold mb-1">Customer Satisfaction Level:</p>
+                    <p class="text-3xl font-bold mb-3 ${satisfactionClassMap[result.satisfaction_class] || 'satisfaction-medium'}">${result.satisfaction_class}</p>
+                    <p class="text-sm opacity-75">Confidence Score: ${result.satisfaction_score} / 5.0</p>
+                </div>
+            </div>
+        `;
+        container.classList.remove('hidden');
+        container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function displayError(message) {
+        const container = document.getElementById('resultContainer');
+        container.innerHTML = `
+            <div class="result-card bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    <p class="text-red-800 font-medium">${message}</p>
+                </div>
+            </div>
+        `;
+        container.classList.remove('hidden');
+    }
+</script>
+{% endblock %}
